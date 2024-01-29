@@ -49,14 +49,14 @@ function renderPokemonList(pokemonArray) {
 async function nextPokemon() {
     if (currentPokemon < allPokemon.length) {
         currentPokemon++;
-        await openPokemon(currentPokemon);
+        await updatePopupContent(allPokemon[currentPokemon]);
     }
 }
 
 async function previousPokemon() {
     if (currentPokemon > 0) {
         currentPokemon--;
-        await openPokemon(currentPokemon);
+        await updatePopupContent(allPokemon[currentPokemon]);
     }
 }
 
@@ -87,36 +87,62 @@ async function openPokemon(id) {
         closePopup();
     }
     initialScrollPosition = window.scrollY;
-    currentPokemon = id; // Setze die aktuelle Pokemon-ID
+    currentPokemon = id;
     let url = `https://pokeapi.co/api/v2/pokemon/${id}`;
     let response = await fetch(url);
     let pokemonDetail = await response.json();
     displayPopup(pokemonDetail);
 }
 
-function displayPopup(pokemonDetail) {
-    isPopupOpen = true;
+function generateStatsHtml(stats, typeColor) {
+    return stats.map(stat => {
+        return `
+            <div class="statsWrapper">
+                <div class="statName" style="color: ${typeColor};"><p>${stat.stat.name}</p></div>
+                <progress value="${stat.base_stat}" max="100" class="progress-bar" style="--progress-color: ${typeColor};"></progress>
+            </div>`;
+    }).join('');
+}
+
+function calculatePokemonDetails(pokemonDetail) {
     let capitalizedFirstLetter = pokemonDetail.name.charAt(0).toUpperCase() + pokemonDetail.name.slice(1);
     let typesHtml = pokemonDetail.types.map(type => `<span class="${type.type.name}">${type.type.name}</span>`).join('');
     let height = pokemonDetail.height / 10;
     let weight = pokemonDetail.weight / 10;
     let abilitiesHtml = pokemonDetail.abilities.map(ability => `<span class="${ability.ability.name.toLowerCase()}">${ability.ability.name}</span>`).join('');
-    let statsHtml = '';
-    pokemonDetail.stats.forEach(stat => {
-        let pokemonColor = colors[pokemonDetail.types[0].type.name] || "#FFFFFF";
-        statsHtml += `
-    <div class="statsWrapper">
-        <div class="statName" style="color: ${pokemonColor};"><p>${stat.stat.name}</p></div>
-        <progress value="${stat.base_stat}" max="100" class="progress-bar" style="--progress-color: ${pokemonColor};"></progress>
-    </div>`;
-    });
+    let typeColor = colors[pokemonDetail.types[0].type.name] || "#FFFFFF";
+    let statsHtml = generateStatsHtml(pokemonDetail.stats, typeColor);
+    return {
+        capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml
+    };
+}
 
+function displayPopup(pokemonDetail) {
+    const { capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml } = calculatePokemonDetails(pokemonDetail);
     let pokemonColor = colors[pokemonDetail.types[0].type.name] || "#FFFFFF";
     let html = generatePopupHTML(pokemonDetail, capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml, pokemonColor);
     document.body.innerHTML += html;
     document.body.style.overflow = 'hidden';
 }
 
+async function updatePopupContent(pokemonDetail) {
+    let { capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml } = calculatePokemonDetails(pokemonDetail);
+    let pokemonColor = colors[pokemonDetail.types[0].type.name] || "#FFFFFF";
+    let popupElement = document.querySelector('.popup');
+    popupElement.querySelector('.card span').innerText = capitalizedFirstLetter;
+    popupElement.querySelector('.pokemonId').innerText = `#${pokemonDetail.id}`;
+    popupElement.querySelector('.detailImage img').src = pokemonDetail.sprites.other.dream_world.front_default;
+    popupElement.querySelector('.types').innerHTML = typesHtml;
+    popupElement.querySelector('.weight p').innerText = `${weight}kg`;
+    popupElement.querySelector('.height p').innerText = `${height}m`;
+    popupElement.querySelector('.abilities').innerHTML = abilitiesHtml;
+    popupElement.querySelector('.stats').innerHTML = `<span>Base Stats</span>${statsHtml}`;
+    popupElement.querySelector('.card').style.backgroundColor = pokemonColor;
+    let spanElements = popupElement.querySelectorAll('.types span');
+    spanElements.forEach(function (span) {
+        span.style.backgroundColor = pokemonColor;
+    });
+}
 
 function closePopup() {
     isPopupOpen = false;
@@ -124,7 +150,6 @@ function closePopup() {
     document.body.style.overflow = '';
     window.scrollTo(0, initialScrollPosition);
 }
-
 
 // HTML FUNCTIONS
 function createPokedexTemplate(pokemon, capitalizedFirstLetter) {
