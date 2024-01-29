@@ -118,7 +118,7 @@ function calculatePokemonDetails(pokemonDetail) {
 }
 
 function displayPopup(pokemonDetail) {
-    const { capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml } = calculatePokemonDetails(pokemonDetail);
+    let { capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml } = calculatePokemonDetails(pokemonDetail);
     let pokemonColor = colors[pokemonDetail.types[0].type.name] || "#FFFFFF";
     let html = generatePopupHTML(pokemonDetail, capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml, pokemonColor);
     document.body.innerHTML += html;
