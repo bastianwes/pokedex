@@ -3,6 +3,7 @@ let allPokemon = [];
 let isPopupOpen = false;
 let initialScrollPosition;
 let currentPokemon;
+let currentSearchQuery = '';
 let colors = {
     normal: "#A8A878",
     fire: "#F08030",
@@ -68,6 +69,7 @@ function filterPokemonByName(pokemon, query) {
 }
 
 function searchPokemon(query) {
+    currentSearchQuery = query; // Aktualisiere die aktuelle Suchanfrage
     let filteredPokemon = allPokemon.filter(function (pokemon) {
         return filterPokemonByName(pokemon, query);
     });
@@ -89,11 +91,11 @@ async function openPokemon(id) {
         closePopup();
     }
     initialScrollPosition = window.scrollY;
-    currentPokemon = id;
+    let currentPokemonIndex = id;
     let url = `https://pokeapi.co/api/v2/pokemon/${id}`;
     let response = await fetch(url);
     let pokemonDetail = await response.json();
-    displayPopup(pokemonDetail);
+    displayPopup(pokemonDetail, currentPokemonIndex);
 }
 
 function generateStatsHtml(stats, typeColor) {
@@ -119,12 +121,15 @@ function calculatePokemonDetails(pokemonDetail) {
     };
 }
 
-function displayPopup(pokemonDetail) {
+
+function displayPopup(pokemonDetail, currentPokemonIndex) {
     let { capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml } = calculatePokemonDetails(pokemonDetail);
     let pokemonColor = colors[pokemonDetail.types[0].type.name] || "#FFFFFF";
     let html = generatePopupHTML(pokemonDetail, capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml, pokemonColor);
     document.body.innerHTML += html;
     document.body.style.overflow = 'hidden';
+    currentPokemon = currentPokemonIndex;
+    document.getElementById('searchInput').value = currentSearchQuery;
 }
 
 async function updatePopupContent(pokemonDetail) {
