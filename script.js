@@ -176,7 +176,6 @@ function generatePopupHTML(pokemonDetail, capitalizedFirstLetter, typesHtml, hei
             </style>
             <div class="card" style="background-color: ${pokemonColor};">
                 <div class="detailHeader">
-                    <img src="img/pokedex.png">
                     <i onclick="closePopup()" class="fa-solid fa-arrow-left"></i>
                     <span>${capitalizedFirstLetter}</span>
                     <div class="pokemonId">#${pokemonDetail.id}</div>

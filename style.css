@@ -19,7 +19,7 @@ footer {
 }
 
 .searchPokemon {
-  padding: 3px 00px;
+  padding: 3px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,7 +120,6 @@ footer {
 .popup {
   position: fixed;
   top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   z-index: 2;
@@ -128,26 +127,16 @@ footer {
 
 .card {
   position: fixed;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
-  max-width: 40vw;
-  width: 90%;
-  border-radius: 2vw;
-  margin-top: 50vh;
-}
-
-.card::before {
-  content: '';
-  position: fixed;
-  top: 30%;
-  left: 0;
-  width: 100%;
-  height: 70%;
-  background-color: white;
-  border-radius: 2vw;
-  z-index: -1;
+  height: 95vh;
+  z-index: 1;
+  overflow-y: auto;
+  width: 50vw;
+  left: 25%;
+  border-radius: 30px;
+  margin-top: 20px;
+  margin-bottom: 0;
+  background: linear-gradient(to top, white 60%, transparent 100%, transparent 80%);
 }
 
 #closeBtn {
@@ -158,7 +147,7 @@ footer {
 
 .pokemonWeightHeightMove {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-around;
   margin-top: 40px;
 }
 
@@ -240,16 +229,6 @@ footer {
   gap: 10px;
 }
 
-.weightWrapper {
-  border-right: 1px solid grey;
-  padding-right: 10%;
-}
-
-.abilitiesWrapper {
-  border-left: 1px solid grey;
-  padding-left: 10%;
-}
-
 .weightWrapper p {
   display: flex;
   justify-content: center;
@@ -303,8 +282,7 @@ footer {
 .statName p {
   margin: 0;
   text-transform: capitalize;
-  font-weight: bold;
-  text-shadow: 1px 10px 10px rgb(219, 216, 216);
+  color: black;
 }
 
 .progress-bar {
@@ -314,7 +292,7 @@ footer {
   height: 15px;
   border-radius: 8px;
   background-color: #f0f0f0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
 }
 
 .progress-bar::-webkit-progress-bar {
@@ -327,33 +305,49 @@ footer {
   background-color: var(--progress-color);
 }
 
-@media (max-width: 1400px) {
-  .card {
-    max-width: 80vw;
-    width: 60%;
-  }
-}
-
 @media (max-width: 1000px) {
   .card {
-    max-width: 90vw;
     width: 80%;
-  }
-
-  .detailHeader img {
-    max-width: 250px;
-    height: 250px;
-    top: 2%;
+    left: 10%;
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 650px) {
   .card {
-    max-width: 90vw;
     width: 100%;
+    left: 0;
+  }
+}
+
+@media (max-width: 500px) {
+  .abilities {
+    display: none;
   }
 
-  .detailHeader img {
+  .abilitiesWrapper {
     display: none;
+  }
+
+  .weightWrapper {
+    border-right: 0px;
+  }
+
+  .detailImage img {
+    width: 180px;
+    height: 180px;
+    z-index: 1;
+  }
+
+  .types {
+    margin-top: 20px;
+  }
+
+  .statsWrapper {
+    margin: 6px auto;
+  }
+
+  .card {
+    height: 89vh;
+    background: linear-gradient(to top, white 60%, transparent 100%, transparent 80%);
   }
 }
