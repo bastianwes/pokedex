@@ -4,6 +4,8 @@ let isPopupOpen = false;
 let initialScrollPosition;
 let currentPokemon;
 let currentSearchQuery = '';
+let maxPokemon = 200;
+let loadedPokemonCount = 0;
 let colors = {
     normal: "#A8A878",
     fire: "#F08030",
@@ -25,20 +27,35 @@ let colors = {
     dark: "#EE99AC",
 };
 
-async function loadAllPokemon() {
-    for (let i = 1; i <= 150; i++) {
-        let url = `https://pokeapi.co/api/v2/pokemon/${i}`;
-        let response = await fetch(url);
-        let pokemonData = await response.json();
+async function fetchData(url) {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+}
+
+async function loadPokemon() {
+    document.querySelector('footer button').style.visibility = 'hidden';
+    const loader = document.getElementById('loader');
+    loader.style.display = 'block';
+    const startIdx = loadedPokemonCount + 1;
+    const endIdx = Math.min(loadedPokemonCount + 20, maxPokemon);
+    for (let i = startIdx; i <= endIdx; i++) {
+        const url = `https://pokeapi.co/api/v2/pokemon/${i}`;
+        const pokemonData = await fetchData(url);
         allPokemon.push(pokemonData);
     }
+    loadedPokemonCount = endIdx;
     renderPokemonList(allPokemon);
+    loader.style.display = 'none';
+
+    // Zeige den "Load More Pokemon"-Button nach dem Laden an
+    document.querySelector('footer button').style.visibility = 'visible';
 }
+
 
 function renderPokemonList(pokemonArray) {
     let pokemonList = document.getElementById("allPokemons");
     pokemonList.innerHTML = "";
-
     for (let i = 0; i < pokemonArray.length; i++) {
         let pokemon = pokemonArray[i];
         let capitalizedFirstLetter = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
@@ -63,13 +80,14 @@ async function previousPokemon() {
     await updatePopupContent(allPokemon[currentPokemon]);
 }
 
+
 // FILTER POKEMON
 function filterPokemonByName(pokemon, query) {
     return pokemon.name.toLowerCase().startsWith(query.toLowerCase());
 }
 
 function searchPokemon(query) {
-    currentSearchQuery = query; // Aktualisiere die aktuelle Suchanfrage
+    currentSearchQuery = query;
     let filteredPokemon = allPokemon.filter(function (pokemon) {
         return filterPokemonByName(pokemon, query);
     });
@@ -77,6 +95,10 @@ function searchPokemon(query) {
         displayNotFoundMessage();
     } else {
         renderPokemonList(filteredPokemon);
+    }
+    let loadMoreButton = document.querySelector('footer button');
+    if (loadMoreButton) {
+        loadMoreButton.style.display = 'none';
     }
 }
 
@@ -91,12 +113,13 @@ async function openPokemon(id) {
         closePopup();
     }
     initialScrollPosition = window.scrollY;
-    let currentPokemonIndex = id;
+    currentPokemon = id - 1; // Hier wird currentPokemon richtig initialisiert
     let url = `https://pokeapi.co/api/v2/pokemon/${id}`;
     let response = await fetch(url);
     let pokemonDetail = await response.json();
-    displayPopup(pokemonDetail, currentPokemonIndex);
+    displayPopup(pokemonDetail, currentPokemon);
 }
+
 
 function generateStatsHtml(stats, typeColor) {
     return stats.map(stat => {
@@ -120,7 +143,6 @@ function calculatePokemonDetails(pokemonDetail) {
         capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml
     };
 }
-
 
 function displayPopup(pokemonDetail, currentPokemonIndex) {
     let { capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml } = calculatePokemonDetails(pokemonDetail);
