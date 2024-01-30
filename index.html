@@ -19,11 +19,13 @@
         </div>
         <div class="searchPokemon">
             <i class="fa-solid fa-magnifying-glass searchIcon"></i>
-            <input class="input" type="text" placeholder="Search" oninput="searchPokemon(this.value)">
+            <input id="searchInput" class="input" autocomplete="off" type="text" placeholder="Search"
+                oninput="searchPokemon(this.value)">
         </div>
     </header>
 
     <div id="allPokemons"></div>
+    <button onclick="loadLimitedPokemon()">Mehr Pokémon laden</button>
 </body>
 <footer></footer>
 

@@ -47,17 +47,19 @@ function renderPokemonList(pokemonArray) {
 }
 
 async function nextPokemon() {
-    if (currentPokemon < allPokemon.length) {
-        currentPokemon++;
-        await updatePopupContent(allPokemon[currentPokemon]);
+    currentPokemon++;
+    if (currentPokemon >= allPokemon.length) {
+        currentPokemon = 0;
     }
+    await updatePopupContent(allPokemon[currentPokemon]);
 }
 
 async function previousPokemon() {
-    if (currentPokemon > 0) {
-        currentPokemon--;
-        await updatePopupContent(allPokemon[currentPokemon]);
+    currentPokemon--;
+    if (currentPokemon < 0) {
+        currentPokemon = allPokemon.length - 1;
     }
+    await updatePopupContent(allPokemon[currentPokemon]);
 }
 
 // FILTER POKEMON
