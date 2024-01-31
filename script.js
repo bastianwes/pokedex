@@ -42,6 +42,7 @@ async function loadPokemon() {
     document.querySelector('footer button').style.visibility = 'hidden';
     const loader = document.getElementById('loader');
     loader.style.display = 'block';
+    document.getElementById('loading-overlay').style.display = 'block';
     const startIdx = loadedPokemonCount + 1;
     const endIdx = Math.min(loadedPokemonCount + 20, maxPokemon);
     for (let i = startIdx; i <= endIdx; i++) {
@@ -52,6 +53,7 @@ async function loadPokemon() {
     loadedPokemonCount = endIdx;
     renderPokemonList(allPokemon);
     loader.style.display = 'none';
+    document.getElementById('loading-overlay').style.display = 'none';
     updateLoadButtonVisibility();
 }
 
