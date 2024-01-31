@@ -51,7 +51,7 @@ footer {
   margin: 30px auto 50px;
   display: grid;
   place-items: center;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
   grid-gap: 10px;
   border-radius: 10px;
 }
