@@ -33,6 +33,11 @@ async function fetchData(url) {
     return data;
 }
 
+function updateLoadButtonVisibility() {
+    const loadButton = document.querySelector('footer button');
+    loadButton.style.visibility = currentSearchQuery ? 'hidden' : 'visible';
+}
+
 async function loadPokemon() {
     document.querySelector('footer button').style.visibility = 'hidden';
     const loader = document.getElementById('loader');
@@ -47,11 +52,8 @@ async function loadPokemon() {
     loadedPokemonCount = endIdx;
     renderPokemonList(allPokemon);
     loader.style.display = 'none';
-
-    // Zeige den "Load More Pokemon"-Button nach dem Laden an
-    document.querySelector('footer button').style.visibility = 'visible';
+    updateLoadButtonVisibility();
 }
-
 
 function renderPokemonList(pokemonArray) {
     let pokemonList = document.getElementById("allPokemons");
@@ -80,7 +82,6 @@ async function previousPokemon() {
     await updatePopupContent(allPokemon[currentPokemon]);
 }
 
-
 // FILTER POKEMON
 function filterPokemonByName(pokemon, query) {
     return pokemon.name.toLowerCase().startsWith(query.toLowerCase());
@@ -96,10 +97,7 @@ function searchPokemon(query) {
     } else {
         renderPokemonList(filteredPokemon);
     }
-    let loadMoreButton = document.querySelector('footer button');
-    if (loadMoreButton) {
-        loadMoreButton.style.display = 'none';
-    }
+    updateLoadButtonVisibility();
 }
 
 function displayNotFoundMessage() {
@@ -113,22 +111,11 @@ async function openPokemon(id) {
         closePopup();
     }
     initialScrollPosition = window.scrollY;
-    currentPokemon = id - 1; // Hier wird currentPokemon richtig initialisiert
+    currentPokemon = id - 1;
     let url = `https://pokeapi.co/api/v2/pokemon/${id}`;
     let response = await fetch(url);
     let pokemonDetail = await response.json();
     displayPopup(pokemonDetail, currentPokemon);
-}
-
-
-function generateStatsHtml(stats, typeColor) {
-    return stats.map(stat => {
-        return `
-            <div class="statsWrapper">
-                <div class="statName" style="color: ${typeColor};"><p>${stat.stat.name}</p></div>
-                <progress value="${stat.base_stat}" max="100" class="progress-bar" style="--progress-color: ${typeColor};"></progress>
-            </div>`;
-    }).join('');
 }
 
 function calculatePokemonDetails(pokemonDetail) {
@@ -191,6 +178,16 @@ function createPokedexTemplate(pokemon, capitalizedFirstLetter) {
             </div>
             <div id="name">${capitalizedFirstLetter}</div>
         </div>`;
+}
+
+function generateStatsHtml(stats, typeColor) {
+    return stats.map(stat => {
+        return `
+            <div class="statsWrapper">
+                <div class="statName" style="color: ${typeColor};"><p>${stat.stat.name}</p></div>
+                <progress value="${stat.base_stat}" max="100" class="progress-bar" style="--progress-color: ${typeColor};"></progress>
+            </div>`;
+    }).join('');
 }
 
 function generatePopupHTML(pokemonDetail, capitalizedFirstLetter, typesHtml, height, weight, abilitiesHtml, statsHtml, pokemonColor) {
